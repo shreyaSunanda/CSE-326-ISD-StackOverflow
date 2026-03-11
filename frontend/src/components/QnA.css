@@ -1,0 +1,117 @@
+/* src/components/QnA.css */
+.container {
+  width: 80%;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}
+
+.question-form, .answer-form, .reply-form {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.question-form input,
+.answer-form input,
+.reply-form input,
+.question-form textarea {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 8px 12px;
+  border: none;
+  background-color: #0077cc;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #005fa3;
+}
+
+button:disabled {
+  background-color: #999;
+  cursor: not-allowed;
+}
+
+.question-card, .answer-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 15px;
+  background-color: #f9f9f9;
+}
+
+.answer-section {
+  margin-left: 20px;
+  margin-top: 10px;
+}
+
+.reply-section {
+  margin-left: 20px;
+  margin-top: 5px;
+}
+
+.reply-text {
+  margin: 5px 0;
+  font-style: italic;
+  color: #555;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.answer-section {
+  margin-top: 20px;
+}
+
+/* Each answer box */
+.answer-card {
+  border: 1px solid #333;
+  border-radius: 5px;
+  padding: 10px;
+  margin-top: 10px;
+  background-color: #f8f8f8;
+}
+
+/* Replies inside an answer */
+.reply-section {
+  margin-top: 10px;
+}
+
+.reply-card {
+  border: 1px solid #aaa;
+  border-radius: 5px;
+  padding: 8px;
+  margin: 5px 0 5px 20px; /* indented from answer */
+  background-color: #fff;
+}
+
+/* Answer form styling */
+.answer-form input {
+  width: 80%;
+  padding: 6px;
+  margin-right: 5px;
+}
+
+.answer-form button {
+  padding: 6px 10px;
+}
+
+/* Reply input styling */
+.reply-section input {
+  width: 70%;
+  padding: 5px;
+  margin-right: 5px;
+}
+
+.reply-section button {
+  padding: 5px 10px;
+}
