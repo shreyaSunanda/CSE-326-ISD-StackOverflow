@@ -8,24 +8,77 @@ const Answer = require("../models/Answer");
 const Reply = require("../models/Reply");
 
 // Get all questions
+// router.get("/", async (req, res) => {
+//   try {
+//     const questions = await Question.find();
+//     res.json(questions);
+//   } catch (err) {
+//     res.status(500).json({ error: "Failed to fetch questions" });
+//   }
+// });
+
+//change
+
 router.get("/", async (req, res) => {
   try {
-    const questions = await Question.find();
-    res.json(questions);
+    
+    const questions = await Question.find().sort({ createdAt: -1 });
+    res.json({ success: true, data: { questions } });
   } catch (err) {
-    res.status(500).json({ error: "Failed to fetch questions" });
+    res.status(500).json({ success: false, error: "Failed to fetch questions" });
   }
 });
 
 // Post a new question
-router.post("/", async (req, res) => {
+// router.post("/", async (req, res) => {
+//   try {
+//     const { title, description } = req.body;
+//     const q = new Question({ title, description });
+//     await q.save();
+//     res.json(q);
+//   } catch (err) {
+//     res.status(500).json({ error: "Failed to post question" });
+//   }
+// });
+
+//change
+
+
+router.post("/", async (req, res) => { 
   try {
-    const { title, description } = req.body;
-    const q = new Question({ title, description });
+    const { title, body, tags, authorId, authorName, source } = req.body;
+
+    
+    if (!authorId || !authorName) {
+        return res.status(400).json({ 
+            success: false, 
+            error: "Author ID and Name are required. Please login again." 
+        });
+    }
+
+    const q = new Question({ 
+        title, 
+        body,       
+        tags: Array.isArray(tags) ? tags : [],       
+        authorId,   
+        authorName, 
+        source: source || 'manual'
+    });
+
+    
     await q.save();
-    res.json(q);
+    
+    
+    return res.status(201).json({ success: true, data: q });
+
   } catch (err) {
-    res.status(500).json({ error: "Failed to post question" });
+    console.error("Save Error:", err.message);
+    
+    
+    return res.status(400).json({ 
+        success: false, 
+        error: err.message 
+    });
   }
 });
 
