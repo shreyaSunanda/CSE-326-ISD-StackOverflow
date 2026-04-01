@@ -128,25 +128,7 @@ ${context ? `\nAdditional context: ${context}` : ''}
 
 Generate ONE well-structured question.`;
 
-    // Call Groq API
-    // const response = await axios.post(
-    //   "https://api.groq.com/openai/v1/chat/completions",
-    //   {
-    //     model: "groq/compound", 
-    //     messages: [
-    //       { role: "system", content: systemPrompt },
-    //       { role: "user", content: userPrompt }
-    //     ],
-    //     max_tokens: 300,
-    //     temperature: 0.7
-    //   },
-    //   { 
-    //     headers: { 
-    //       Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-    //       "Content-Type": "application/json"
-    //     } 
-    //   }
-    // );
+   
     // OpenRouter API Call
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
