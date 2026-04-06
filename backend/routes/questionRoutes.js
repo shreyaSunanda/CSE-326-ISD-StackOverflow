@@ -22,7 +22,21 @@ const Reply = require("../models/Reply");
 router.get("/", async (req, res) => {
   try {
     const questions = await Question.find().sort({ createdAt: -1 });
-    res.json({ success: true, data: { questions } });
+
+    // Fetch answer count for each question
+    const questionsWithAnswerCount = await Promise.all(
+      questions.map(async (question) => {
+        const answerCount = await Answer.countDocuments({
+          questionId: question._id,
+        });
+        return {
+          ...question.toObject(),
+          answerCount: answerCount,
+        };
+      }),
+    );
+
+    res.json({ success: true, data: { questions: questionsWithAnswerCount } });
   } catch (err) {
     res
       .status(500)
