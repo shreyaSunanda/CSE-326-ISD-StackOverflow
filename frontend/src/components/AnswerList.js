@@ -1,52 +1,109 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ReplyList from "./ReplyList";
+import './AnswerList.css';
 
 const AnswerList = ({ questionId }) => {
   const [answers, setAnswers] = useState([]);
   const [newAnswer, setNewAnswer] = useState("");
+  const [fetchingAnswers, setFetchingAnswers] = useState(false);
+  const [postingAnswer, setPostingAnswer] = useState(false);
+  const [error, setError] = useState(null);
+
+  const getCurrentUser = () => {
+    try {
+      const savedUser = localStorage.getItem("user");
+      return savedUser ? JSON.parse(savedUser) : null;
+    } catch (err) {
+      return null;
+    }
+  };
 
   const fetchAnswers = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/questions/${questionId}/answers`);
-      setAnswers(res.data);
+      setFetchingAnswers(true);
+      const res = await axios.get(`http://localhost:5000/api/questions/${questionId}/answers`);
+      setAnswers(res.data || []);
+      setError(null);
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching answers:", err);
+      setError("Failed to load answers");
+    } finally {
+      setFetchingAnswers(false);
     }
   };
 
   const submitAnswer = async (e) => {
     e.preventDefault();
-    if (!newAnswer) return;
+    if (!newAnswer.trim()) return;
+
+    const currentUser = getCurrentUser();
+    
     try {
-      await axios.post(`http://localhost:5000/questions/${questionId}/answer`, { text: newAnswer });
+      setPostingAnswer(true);
+      await axios.post(`http://localhost:5000/api/questions/${questionId}/answer`, {
+        text: newAnswer,
+        authorId: currentUser?.id,
+        authorName: currentUser?.username || currentUser?.name || "Anonymous"
+      });
       setNewAnswer("");
-      fetchAnswers();
+      setError(null);
+      await fetchAnswers();
+      setPostingAnswer(false);
     } catch (err) {
-      console.error(err);
+      console.error("Error posting answer:", err);
+      setError("Failed to post answer");
+      setPostingAnswer(false);
     }
   };
 
   useEffect(() => {
-    fetchAnswers();
+    if (questionId) {
+      fetchAnswers();
+    }
   }, [questionId]);
 
   return (
-    <div className="answer-section">
-      <h4>Answers</h4>
-      {answers.map((a) => (
-        <div key={a._id} className="answer-card">
-          <p>{a.text}</p>
-          <ReplyList answerId={a._id} />
+    <div className="answer-list-container">
+      <h2 className="answer-title">{answers.length} Answer{answers.length !== 1 ? 's' : ''}</h2>
+      
+      {error && <div className="error-message">{error}</div>}
+      
+      {fetchingAnswers && answers.length === 0 ? (
+        <p className="loading-text">Loading answers...</p>
+      ) : answers.length > 0 ? (
+        <div className="answers-list">
+          {answers.map((a) => (
+            <div key={a._id} className="answer-item">
+              <div className="answer-text">{a.text}</div>
+              <div className="answer-meta">
+                answered by <strong>{a.authorName || "Anonymous"}</strong> on {new Date(a.createdAt).toLocaleDateString()}
+              </div>
+              <ReplyList answerId={a._id} />
+            </div>
+          ))}
         </div>
-      ))}
+      ) : (
+        <p className="no-answers">No answers yet. Be the first to answer!</p>
+      )}
+
       <form className="answer-form" onSubmit={submitAnswer}>
-        <input
-          value={newAnswer}
-          onChange={(e) => setNewAnswer(e.target.value)}
-          placeholder="Write an answer"
-        />
-        <button type="submit">Submit Answer</button>
+        <div className="form-group">
+          <label htmlFor="answer-input">Your Answer</label>
+          <textarea
+            id="answer-input"
+            value={newAnswer}
+            onChange={(e) => setNewAnswer(e.target.value)}
+            placeholder="Write your answer here..."
+            rows="8"
+            disabled={postingAnswer}
+          />
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <button type="submit" disabled={postingAnswer} className="submit-answer-btn">
+            {postingAnswer ? 'Posting...' : 'Submit'}
+          </button>
+        </div>
       </form>
     </div>
   );

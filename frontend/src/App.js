@@ -15,13 +15,15 @@
 import React, { useState, useEffect } from "react";
 import Feed from "./components/Feed";
 import Auth from "./components/Auth";
-import AskQuestion from "./components/AskQuestion"; 
+import AskQuestion from "./components/AskQuestion";
+import QuestionDetail from "./components/QuestionDetail";
 import "./App.css";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null); 
   const [currentPage, setCurrentPage] = useState('feed');
+  const [selectedQuestionId, setSelectedQuestionId] = useState(null);
 
   
   useEffect(() => {
@@ -89,14 +91,25 @@ function App() {
           <main className="app-main">
             
             {currentPage === 'feed' ? (
-              <Feed onAskQuestionClick={() => setCurrentPage('ask')} />
-            ) : (
+              <Feed 
+                onAskQuestionClick={() => setCurrentPage('ask')}
+                onQuestionClick={(questionId) => {
+                  setSelectedQuestionId(questionId);
+                  setCurrentPage('question-detail');
+                }}
+              />
+            ) : currentPage === 'ask' ? (
               <AskQuestion 
                 user={user} 
                 onCancel={() => setCurrentPage('feed')} 
                 onSuccess={() => setCurrentPage('feed')} 
               />
-            )}
+            ) : currentPage === 'question-detail' ? (
+              <QuestionDetail 
+                questionId={selectedQuestionId}
+                onBackClick={() => setCurrentPage('feed')}
+              />
+            ) : null}
           </main>
         </>
       )}

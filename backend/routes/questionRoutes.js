@@ -200,8 +200,13 @@ Generate ONE well-structured question.`;
 // Post an answer to a question
 router.post("/:questionId/answer", async (req, res) => {
   try {
-    const { text } = req.body;
-    const answer = new Answer({ questionId: req.params.questionId, text });
+    const { text, authorId, authorName } = req.body;
+    const answer = new Answer({
+      questionId: req.params.questionId,
+      text,
+      authorId: authorId || undefined,
+      authorName: authorName || "Anonymous"
+    });
     await answer.save();
     res.json(answer);
   } catch (err) {
@@ -212,8 +217,13 @@ router.post("/:questionId/answer", async (req, res) => {
 // Post a reply to an answer
 router.post("/answer/:answerId/reply", async (req, res) => {
   try {
-    const { text } = req.body;
-    const reply = new Reply({ answerId: req.params.answerId, text });
+    const { text, authorId, authorName } = req.body;
+    const reply = new Reply({
+      answerId: req.params.answerId,
+      text,
+      authorId: authorId || undefined,
+      authorName: authorName || "Anonymous"
+    });
     await reply.save();
     res.json(reply);
   } catch (err) {
@@ -224,7 +234,7 @@ router.post("/answer/:answerId/reply", async (req, res) => {
 // Get all answers for a question
 router.get("/:questionId/answers", async (req, res) => {
   try {
-    const answers = await Answer.find({ questionId: req.params.questionId });
+    const answers = await Answer.find({ questionId: req.params.questionId }).sort({ createdAt: 1 });
     res.json(answers);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch answers" });
@@ -234,10 +244,28 @@ router.get("/:questionId/answers", async (req, res) => {
 // Get all replies for an answer
 router.get("/answer/:answerId/replies", async (req, res) => {
   try {
-    const replies = await Reply.find({ answerId: req.params.answerId });
+    const replies = await Reply.find({ answerId: req.params.answerId }).sort({ createdAt: 1 });
     res.json(replies);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch replies" });
+  }
+});
+
+// Get a single question by ID
+router.get("/:questionId", async (req, res) => {
+  try {
+    const question = await Question.findById(req.params.questionId);
+
+    if (!question) {
+      return res.status(404).json({
+        success: false,
+        error: "Question not found",
+      });
+    }
+
+    res.json({ success: true, data: question });
+  } catch (err) {
+    res.status(500).json({ success: false, error: "Failed to fetch question" });
   }
 });
 

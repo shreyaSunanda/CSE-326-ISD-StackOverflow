@@ -49,7 +49,12 @@ const Feed = (props) => {
                     </div>
                 ) : questions.length > 0 ? (
                     questions.map((q) => (
-                        <div key={q._id} className="question-card">
+                        <div 
+                            key={q._id} 
+                            className="question-card"
+                            onClick={() => props.onQuestionClick(q._id)}
+                            style={{ cursor: 'pointer' }}
+                        >
                             <div className="question-stats">
                                 {/* <div className="stat-item">
                                     <span>{q.voteCount || 0}</span> votes
