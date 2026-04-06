@@ -97,9 +97,7 @@ const QuestionDetail = ({ questionId, onBackClick }) => {
 
   return (
     <div className="question-detail-container">
-      <button className="back-btn" onClick={onBackClick}>
-        ← Back to Feed
-      </button>
+      <button className="back-btn" onClick={onBackClick}>Back to Feed</button>
 
       {loading ? (
         <div className="loading-container">
