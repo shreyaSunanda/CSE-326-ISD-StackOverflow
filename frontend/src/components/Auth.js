@@ -60,53 +60,73 @@ const Auth = (props) => {
 	};
 
 	return (
-		<div className="auth-container">
-			<div className="auth-card">
-				<h2>{isLogin ? "Login to Stack Overflow" : "Create Account"}</h2>
-				<form onSubmit={handleSubmit}>
-					{!isLogin && (
+		<div className="auth-page-wrapper">
+			<div className="auth-landing-side">
+				<h1>Join the Developer Community</h1>
+				<ul>
+					<li>
+						<span>✓</span> Get unstuck — ask a question
+					</li>
+					<li>
+						<span>✓</span> Unlock privileges like voting and commenting
+					</li>
+					<li>
+						<span>✓</span> Save your favorite tags, filters, and jobs
+					</li>
+					<li>
+						<span>✓</span> Earn reputation and badges
+					</li>
+				</ul>
+				<p>Collaborate and share knowledge with a private group for FREE.</p>
+			</div>
+			<div className="auth-container">
+				<div className="auth-card">
+					<h2>{isLogin ? "Login to Stack Overflow" : "Create Account"}</h2>
+					<form onSubmit={handleSubmit}>
+						{!isLogin && (
+							<div className="input-group">
+								<label>Full Name</label>
+								<input
+									name="name"
+									type="text"
+									placeholder="Enter your name"
+									onChange={handleChange}
+									required
+									minLength="2"
+								/>
+							</div>
+						)}
+
 						<div className="input-group">
-							<label>Full Name</label>
+							<label>Email Address</label>
+							<input name="email" type="email" placeholder="example@mail.com" onChange={handleChange} required />
+						</div>
+
+						<div className="input-group">
+							<label>Password</label>
 							<input
-								name="name"
-								type="text"
-								placeholder="Enter your name"
+								name="password"
+								type="password"
+								placeholder="Min 6 characters"
 								onChange={handleChange}
 								required
-								minLength="2"
+								minLength="6"
 							/>
 						</div>
-					)}
 
-					<div className="input-group">
-						<label>Email Address</label>
-						<input name="email" type="email" placeholder="example@mail.com" onChange={handleChange} required />
+						<button type="submit" className="auth-btn">
+							{isLogin ? "Login" : "Register"}
+						</button>
+					</form>
+
+					<div className="auth-toggle">
+						<p>
+							{isLogin ? "Don't have an account? " : "Already have an account? "}
+							<span onClick={() => setIsLogin(!isLogin)} className="toggle-link">
+								{isLogin ? "Register" : "Login"}
+							</span>
+						</p>
 					</div>
-
-					<div className="input-group">
-						<label>Password</label>
-						<input
-							name="password"
-							type="password"
-							placeholder="Min 6 characters"
-							onChange={handleChange}
-							required
-							minLength="6"
-						/>
-					</div>
-
-					<button type="submit" className="auth-btn">
-						{isLogin ? "Login" : "Register"}
-					</button>
-				</form>
-
-				<div className="auth-toggle">
-					<p>
-						{isLogin ? "Don't have an account? " : "Already have an account? "}
-						<span onClick={() => setIsLogin(!isLogin)} className="toggle-link">
-							{isLogin ? "Register" : "Login"}
-						</span>
-					</p>
 				</div>
 			</div>
 		</div>
