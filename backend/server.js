@@ -1,5 +1,3 @@
-
-
 // server.js
 
 require("dotenv").config();
@@ -11,29 +9,25 @@ const cors = require("cors");
 
 const app = express();
 
+app.use(
+	cors({
+		origin: process.env.FRONTEND_URL || "http://localhost:3000",
+	}),
+);
 
-app.use(cors({
-  origin: "http://localhost:3000" 
-}));
-
-
-app.use(express.json()); 
-
+app.use(express.json());
 
 connectDB();
 
-
-app.use("/api/questions", questionRoutes); 
+app.use("/api/questions", questionRoutes);
 app.use("/api/auth", authRoutes);
 
-
 app.get("/ping", (req, res) => {
-  res.json({ success: true, message: "Backend is connected!" });
+	res.json({ success: true, message: "Backend is connected!" });
 });
 
-
 app.use((req, res) => {
-    res.status(404).json({ success: false, message: "Route not found" });
+	res.status(404).json({ success: false, message: "Route not found" });
 });
 
 const PORT = process.env.PORT || 5000;
