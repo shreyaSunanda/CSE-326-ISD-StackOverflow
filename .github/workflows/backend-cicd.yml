@@ -1,0 +1,100 @@
+name: Deploy Backend to Render
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-cicd.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Start backend server
+        working-directory: backend
+        run: |
+          PORT=5000 nohup npm start > "$RUNNER_TEMP/backend-start.log" 2>&1 &
+          echo $! > "$RUNNER_TEMP/backend.pid"
+
+      - name: Verify backend /ping health check
+        run: |
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:5000/ping | grep -q '"success":true'; then
+              echo "Backend health check passed"
+              exit 0
+            fi
+
+            if ! kill -0 "$(cat "$RUNNER_TEMP/backend.pid")" 2>/dev/null; then
+              echo "Backend process exited before it became healthy"
+              cat "$RUNNER_TEMP/backend-start.log"
+              exit 1
+            fi
+
+            sleep 2
+          done
+
+          echo "Backend did not become healthy in time"
+          cat "$RUNNER_TEMP/backend-start.log"
+          exit 1
+
+      - name: Trigger and verify Render deploy
+        run: |
+          response_file="$RUNNER_TEMP/render-deploy-response.json"
+          curl --request POST \
+            --url https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys \
+            --header 'accept: application/json' \
+            --header 'authorization: Bearer ${{ secrets.RENDER_API_KEY }}' \
+            --header 'content-type: application/json' \
+            --data '{
+              "commitId": "${{ github.sha }}"
+            }' > "$response_file"
+
+          deploy_id="$(jq -r '.id' "$response_file")"
+
+          for attempt in $(seq 1 60); do
+            response="$(curl -fsS \
+              --header 'accept: application/json' \
+              --header 'authorization: Bearer ${{ secrets.RENDER_API_KEY }}' \
+              https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys/$deploy_id)"
+
+            status="$(jq -r '.status' <<<"$response")"
+
+            case "$status" in
+              live)
+                echo "Render deploy completed successfully"
+                exit 0
+                ;;
+              build_failed|update_failed|canceled|deactivated|pre_deploy_failed)
+                echo "Render deploy failed with status: $status"
+                exit 1
+                ;;
+              created|queued|build_in_progress|update_in_progress|pre_deploy_in_progress)
+                echo "Render deploy still in progress: $status"
+                ;;
+              *)
+                echo "Unexpected Render deploy status: $status"
+                exit 1
+                ;;
+            esac
+
+            sleep 10
+          done
+
+          echo "Render deploy did not reach live status in time"
+          exit 1
