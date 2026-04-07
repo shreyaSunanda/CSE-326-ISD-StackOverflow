@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "../api/client";
 import "./Feed.css";
+import MarkdownElement from "./MarkdownElement";
 
 const Feed = (props) => {
 	const [questions, setQuestions] = useState([]);
@@ -61,7 +62,9 @@ const Feed = (props) => {
 							<div className="question-content">
 								<h3 className="question-title">{q.title}</h3>
 								<p className="question-excerpt">
-									{q.body ? q.body.substring(0, 160) + "..." : "No description available."}
+									<MarkdownElement>
+										{q.body ? q.body.substring(0, 160) + "..." : "No description available."}
+									</MarkdownElement>
 								</p>
 								<div className="question-tags">
 									{q.tags &&

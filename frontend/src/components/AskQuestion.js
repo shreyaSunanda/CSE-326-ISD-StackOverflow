@@ -190,6 +190,20 @@ const AskQuestion = ({ onCancel, onSuccess }) => {
 						{/* AI MODE */}
 						{mode === "ai" && (
 							<>
+								{/* Raw Question Input */}
+								<div className="field-group">
+									<label className="field-label">Your Question</label>
+									<p className="field-hint">Write your question in simple terms, AI will format it professionally.</p>
+									<input
+										type="text"
+										className="field-input"
+										placeholder="e.g., how do i make a component rerender when props change?"
+										rows="4"
+										value={aiRawQuestion}
+										onChange={(e) => setAiRawQuestion(e.target.value)}
+									/>
+								</div>
+
 								{/* Context Input */}
 								<div className="field-group">
 									<label className="field-label">Context</label>
@@ -200,19 +214,6 @@ const AskQuestion = ({ onCancel, onSuccess }) => {
 										rows="4"
 										value={aiContext}
 										onChange={(e) => setAiContext(e.target.value)}
-									/>
-								</div>
-
-								{/* Raw Question Input */}
-								<div className="field-group">
-									<label className="field-label">Your Question (Raw)</label>
-									<p className="field-hint">Write your question in simple terms, AI will format it professionally.</p>
-									<textarea
-										className="field-textarea"
-										placeholder="e.g., how do i make a component rerender when props change?"
-										rows="4"
-										value={aiRawQuestion}
-										onChange={(e) => setAiRawQuestion(e.target.value)}
 									/>
 								</div>
 
@@ -227,7 +228,7 @@ const AskQuestion = ({ onCancel, onSuccess }) => {
 								</button>
 
 								{/* AI Generated Preview */}
-								{aiGeneratedBody && (
+								{/* {aiGeneratedBody && (
 									<div className="ai-preview">
 										<div className="ai-preview-header">
 											<span className="ai-label">AI Generated Draft</span>
@@ -235,7 +236,7 @@ const AskQuestion = ({ onCancel, onSuccess }) => {
 										</div>
 										<pre className="ai-preview-content">{aiGeneratedBody}</pre>
 									</div>
-								)}
+								)} */}
 
 								{/* Editable Title (after generation) */}
 								{aiGeneratedBody && (

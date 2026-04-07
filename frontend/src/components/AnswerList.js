@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import axios from "../api/client";
 import ReplyList from "./ReplyList";
 import "./AnswerList.css";
+import MarkdownElement from "./MarkdownElement";
 
 const AnswerList = ({ questionId }) => {
 	const [answers, setAnswers] = useState([]);
@@ -131,7 +132,9 @@ const AnswerList = ({ questionId }) => {
 				<div className="answers-list">
 					{answers.map((a) => (
 						<div key={a._id} className={`answer-item ${a.aiAnswerKept ? "answer-kept" : ""}`}>
-							<div className="answer-text">{a.text}</div>
+							<div className="answer-text">
+								<MarkdownElement>{a.text}</MarkdownElement>
+							</div>
 							<div className="answer-meta">
 								answered by <strong>{a.authorName || "Anonymous"}</strong>
 								{a.aiGenerated && <span className="ai-badge">🤖 AI Generated</span>}

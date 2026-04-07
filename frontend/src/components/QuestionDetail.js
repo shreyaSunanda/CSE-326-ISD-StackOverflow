@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "../api/client";
 import AnswerList from "./AnswerList";
 import "./QuestionDetail.css";
+import MarkdownElement from "./MarkdownElement";
 
 const QuestionDetail = ({ questionId, onBackClick }) => {
 	const [question, setQuestion] = useState(null);
@@ -133,7 +134,7 @@ const QuestionDetail = ({ questionId, onBackClick }) => {
 
 					<div className="question-detail-content">
 						<div className="question-body">
-							<p>{question.body}</p>
+							<MarkdownElement>{question.body}</MarkdownElement>
 						</div>
 
 						{question.tags && question.tags.length > 0 && (
