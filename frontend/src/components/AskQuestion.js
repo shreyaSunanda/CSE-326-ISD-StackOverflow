@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 import axios from "../api/client";
 import "./AskQuestion.css";
 
@@ -23,7 +24,7 @@ const AskQuestion = ({ onCancel, onSuccess }) => {
 			.filter((t) => t !== "" && !tags.includes(t));
 
 		if (tags.length + newTags.length > 5) {
-			alert("Maximum 5 tags allowed!");
+			toast.error("Maximum 5 tags allowed!");
 			return;
 		}
 		setTags([...tags, ...newTags]);
@@ -44,7 +45,7 @@ const AskQuestion = ({ onCancel, onSuccess }) => {
 	// AI Generation Function
 	const handleGenerateAI = async () => {
 		if (!aiContext.trim() || !aiRawQuestion.trim()) {
-			alert("Please fill in both Context and Question fields");
+			toast.error("Please fill in both Context and Question fields");
 			return;
 		}
 
@@ -61,11 +62,11 @@ const AskQuestion = ({ onCancel, onSuccess }) => {
 				setTitle(res.data.data.title);
 				setBody(res.data.data.body);
 				setAiGeneratedBody(res.data.data.body);
-				alert("AI question generated! You can now edit it below.");
+				toast.success("AI question generated! You can now edit it below.");
 			}
 		} catch (err) {
 			const errorMsg = err.response?.data?.error || "AI generation failed";
-			alert(errorMsg);
+			toast.error(errorMsg);
 		} finally {
 			setIsGenerating(false);
 		}
@@ -76,18 +77,18 @@ const AskQuestion = ({ onCancel, onSuccess }) => {
 
 		if (mode === "ai") {
 			if (!aiRawQuestion?.trim() || !aiContext?.trim()) {
-				alert('Please fill in both your "Rough Question" and "Context" first.');
+				toast.error('Please fill in both your "Rough Question" and "Context" first.');
 				return; // Stop the submission
 			}
 
 			if (!title?.trim() || !body?.trim()) {
-				alert('Please click "✨ Generate Question" to create your draft before posting.');
+				toast.error('Please click "✨ Generate Question" to create your draft before posting.');
 				return; // Stop the submission
 			}
 		}
 
 		if (tags.length === 0) {
-			alert("Please add at least 1 tag.");
+			toast.error("Please add at least 1 tag.");
 			return;
 		}
 
@@ -112,12 +113,12 @@ const AskQuestion = ({ onCancel, onSuccess }) => {
 			);
 
 			if (res.data.success) {
-				alert("Question posted successfully!");
+				toast.success("Question posted successfully!");
 				onSuccess();
 			}
 		} catch (err) {
 			const errorMsg = err.response?.data?.error || "Failed to post question";
-			alert(errorMsg);
+			toast.error(errorMsg);
 		} finally {
 			setLoading(false);
 		}

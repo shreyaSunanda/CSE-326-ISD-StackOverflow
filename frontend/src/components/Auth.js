@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 import axios from "../api/client";
 import "./Auth.css";
 
@@ -33,7 +34,7 @@ const Auth = (props) => {
 					};
 					localStorage.setItem("user", JSON.stringify(userData));
 
-					alert("Login Successful!");
+					toast.success("Login Successful!");
 
 					if (props.onLoginSuccess) {
 						props.onLoginSuccess(userData);
@@ -48,13 +49,13 @@ const Auth = (props) => {
 				});
 
 				if (res.data.success) {
-					alert("Registration Successful! Please Login.");
+					toast.success("Registration Successful! Please Login.");
 					setIsLogin(true);
 				}
 			}
 		} catch (err) {
 			const errorMsg = err.response?.data?.message || "An error occurred. Please try again.";
-			alert(errorMsg);
+			toast.error(errorMsg);
 		}
 	};
 
